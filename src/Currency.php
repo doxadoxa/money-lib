@@ -62,7 +62,7 @@ class Currency
      */
     private function assertLabelIsValid( string $label ): void
     {
-        if ( !preg_match("/[A-Z]{3,4}/", $label ) ) {
+        if ( !preg_match("/^[A-Z]{3,4}$/", $label ) ) {
             throw new CurrencyLabelIsWrongException();
         }
     }

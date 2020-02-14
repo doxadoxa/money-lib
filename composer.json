@@ -20,5 +20,10 @@
         "psr-4": {
             "Money\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     }
 }
