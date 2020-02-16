@@ -1,4 +1,7 @@
 # MoneyLib for PHP
+
+[![Build Status](https://travis-ci.org/doxadoxa/money-lib.svg?branch=master)](https://travis-ci.org/doxadoxa/money-lib)
+
 Simple implementation for Fouler Money Pattern with GMP. 
 You can use this lib for cryptocurrencies also.
 
