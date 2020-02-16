@@ -43,10 +43,24 @@ use Money\Currency;
 use Money\Money;
 
 $ethereum = new Currency('ETH', 18);
+$usd = new Currency('USD', 2);
 $amount = Money::make( $ethereum, 0.05 );
+
+// Add operation
 $newAmount = $amount->add( Money::make( $ethereum, 0.005 ) );
 echo $newAmount->getAmount(); // (float) 0.055
 
+// Sub operation
 $newAmount = $amount->sub( Money::make( $ethereum, 0.005 ) );
 echo $newAmount->getAmount(); // (float) 0.045
+
+// Comparisons
+$amount = Money::make( $usd, 10 );
+$newAmount = Money::make( $usd, 10);
+$amount->equals( $newAmount ); // (bool) true
+
+$newAmount = Money::make( $usd, 20 );
+$amount->less( $newAmount ); // (bool) true
+$amount->more( $newAmount ); // (bool) false
+
 ```
