@@ -3,7 +3,7 @@
     "description": "Simple money library for PHP.",
     "type": "library",
     "license": "MIT",
-    "version": "0.1.0",
+    "keywords": ["money", "library", "currency", "cryptocurrency"],
     "authors": [
         {
             "name": "Taras D",
@@ -25,6 +25,11 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.x-dev"
         }
     }
 }
