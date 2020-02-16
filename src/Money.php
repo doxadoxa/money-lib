@@ -5,7 +5,7 @@ namespace Money;
 
 use GMP;
 use Money\Exceptions\StringIsNotValidIntegerException;
-use Money\Math\BigInteger;
+use Money\Math\ArbitraryFloat;
 use Money\Exceptions\DifferentCurrenciesCantBeOperatedException;
 
 /**
@@ -39,7 +39,7 @@ class Money
      */
     public static function make( Currency $currency, float $amount = 0 ): self
     {
-        $bigIntString = BigInteger::makeFromFloat( $amount, $currency->getDecimals() );
+        $bigIntString = ArbitraryFloat::makeFromFloat( $amount, $currency->getDecimals() );
         $baseAmount = gmp_init( $bigIntString->toString() );
         return new self( $currency, $baseAmount );
     }
@@ -71,7 +71,7 @@ class Money
      */
     public function getAmount(): float
     {
-        return ( new BigInteger( gmp_strval( $this->amount ), $this->currency->getDecimals()  ) )->toFloat();
+        return ( new ArbitraryFloat( gmp_strval( $this->amount ), $this->currency->getDecimals()  ) )->toFloat();
     }
 
     /**
@@ -122,6 +122,38 @@ class Money
         $amount = gmp_sub( $this->getBaseAmount(), $money->getBaseAmount() );
 
         return new self( $this->currency, $amount );
+    }
+
+    /**
+     * @param Money $money
+     * @return bool
+     */
+    public function equals( Money $money ): bool
+    {
+        return $this->getCurrency()->equals( $money->getCurrency() ) &&
+            gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) == 0;
+    }
+
+    /**
+     * @param Money $money
+     * @return bool
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function less( Money $money ): bool
+    {
+        $this->assertOperationsIsAvailable( $money );
+        return gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) === -1;
+    }
+
+    /**
+     * @param Money $money
+     * @return bool
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function more( Money $money ): bool
+    {
+        $this->assertOperationsIsAvailable( $money );
+        return gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) === 1;
     }
 
     /**

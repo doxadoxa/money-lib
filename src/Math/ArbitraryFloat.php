@@ -3,13 +3,23 @@ declare(strict_types=1);
 
 namespace Money\Math;
 
-class BigInteger
+use Money\Exceptions\DecimalsCantBeNegativeException;
+
+class ArbitraryFloat
 {
     private $decimals;
     private $amount;
 
+    /**
+     * ArbitraryFloat constructor.
+     * @param string $amount
+     * @param int $decimals
+     * @throws DecimalsCantBeNegativeException
+     */
     public function __construct( string $amount, int $decimals )
     {
+        $this->assertDecimalsIsNotNegative( $decimals );
+
         $this->amount = $amount;
         $this->decimals = $decimals;
     }
@@ -17,9 +27,10 @@ class BigInteger
     /**
      * @param float $amount
      * @param int $decimals
-     * @return BigInteger
+     * @return ArbitraryFloat
+     * @throws DecimalsCantBeNegativeException
      */
-    public static function makeFromFloat( float $amount, int $decimals ): BigInteger
+    public static function makeFromFloat( float $amount, int $decimals ): ArbitraryFloat
     {
         $stringValue = number_format( $amount, $decimals );
 
@@ -61,5 +72,16 @@ class BigInteger
         $stringValue = $base . '.' . $mantissa;
 
         return (float) $stringValue;
+    }
+
+    /**
+     * @param int $decimals
+     * @throws DecimalsCantBeNegativeException
+     */
+    private function assertDecimalsIsNotNegative( int $decimals ): void
+    {
+        if ( $decimals < 0 ) {
+            throw new DecimalsCantBeNegativeException();
+        }
     }
 }

@@ -15,6 +15,7 @@ class MoneyTest extends TestCase
 {
 
     private $usd;
+    private $rub;
     private $bitcoin;
     private $ethereum;
 
@@ -26,6 +27,7 @@ class MoneyTest extends TestCase
     {
         parent::setUp();
         $this->usd = new Currency('USD', 2);
+        $this->rub = new Currency('RUB', 2);
         $this->bitcoin = new Currency('BTC', 8);
         $this->ethereum = new Currency('ETH', 18);
     }
@@ -176,5 +178,102 @@ class MoneyTest extends TestCase
         $this->assertEquals( '5', $first->getStringAmount() );
         $this->assertEquals( '10', $first->add( $second )->getStringAmount() );
         $this->assertEquals( $result, $first->add( $second )->getAmount() );
+    }
+
+    /***
+     *
+     */
+    public function testEqualsWorks()
+    {
+        $amount = 30;
+        $first = Money::make( $this->usd, $amount );
+        $second = Money::make( $this->usd, $amount );
+
+        $this->assertTrue( $first->equals( $second ) );
+    }
+
+    /**
+     *
+     */
+    public function testEqualsWithDifferentCurrenciesReturnsFalse()
+    {
+        $amount = 30;
+        $first = Money::make( $this->usd, $amount );
+        $second = Money::make( $this->rub, $amount );
+
+        $this->assertFalse( $first->equals( $second ) );
+    }
+
+    /**
+     *
+     */
+    public function testEqualsWithDifferentAmountReturnsFalse()
+    {
+        $first = Money::make( $this->usd, 30 );
+        $second = Money::make( $this->usd, 20 );
+
+        $this->assertFalse( $first->equals( $second ) );
+    }
+
+    /**
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function testLessWorks()
+    {
+        $firstAmount = 20;
+        $secondAmount = 30;
+        $expected = $firstAmount < $secondAmount;
+        $wrongExpected = $secondAmount < $firstAmount;
+
+        $first = Money::make( $this->usd, $firstAmount );
+        $second = Money::make( $this->usd, $secondAmount );
+
+        $this->assertEquals( $expected, $first->less( $second ) );
+        $this->assertEquals( $wrongExpected, $second->less( $first ) );
+    }
+
+    /**
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function testLessThrowErrorWithDifferenceCurrencies()
+    {
+        $this->expectException( DifferentCurrenciesCantBeOperatedException::class );
+
+        $firstAmount = 20;
+        $first = Money::make( $this->usd, $firstAmount );
+        $second = Money::make( $this->rub, $firstAmount );
+
+        $first->less( $second );
+    }
+
+    /**
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function testMoreWorks()
+    {
+        $firstAmount = 30;
+        $secondAmount = 20;
+        $expected = $firstAmount > $secondAmount;
+        $wrongExpected = $secondAmount > $firstAmount;
+
+        $first = Money::make( $this->usd, $firstAmount );
+        $second = Money::make( $this->usd, $secondAmount );
+
+        $this->assertEquals( $expected, $first->more( $second ) );
+        $this->assertEquals( $wrongExpected, $second->more( $first ) );
+    }
+
+    /**
+     * @throws DifferentCurrenciesCantBeOperatedException
+     */
+    public function testMoreThrowErrorWithDifferenceCurrencies()
+    {
+        $this->expectException( DifferentCurrenciesCantBeOperatedException::class );
+
+        $firstAmount = 20;
+        $first = Money::make( $this->usd, $firstAmount );
+        $second = Money::make( $this->rub, $firstAmount );
+
+        $first->more( $second );
     }
 }
