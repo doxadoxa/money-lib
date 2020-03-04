@@ -32,7 +32,7 @@ class ArbitraryFloat
      */
     public static function makeFromFloat( float $amount, int $decimals ): ArbitraryFloat
     {
-        $stringValue = number_format( $amount, $decimals );
+        $stringValue = number_format( $amount, $decimals, '', '' );
 
         $exploded = explode('.', $stringValue );
         $base = $exploded[0];
