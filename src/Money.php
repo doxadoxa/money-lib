@@ -36,11 +36,19 @@ class Money
      * @param Currency $currency
      * @param float $amount
      * @return static
+     * @throws Exceptions\DecimalsCantBeNegativeException
      */
     public static function make( Currency $currency, float $amount = 0 ): self
     {
         $bigIntString = ArbitraryFloat::makeFromFloat( $amount, $currency->getDecimals() );
-        $baseAmount = gmp_init( $bigIntString->toString() );
+
+        if ( $amount == 0 ) {
+            $init = 0;
+        } else {
+            $init = $bigIntString->toString();
+        }
+
+        $baseAmount = gmp_init( $init );
         return new self( $currency, $baseAmount );
     }
 
@@ -68,6 +76,7 @@ class Money
 
     /**
      * @return float
+     * @throws Exceptions\DecimalsCantBeNegativeException
      */
     public function getAmount(): float
     {

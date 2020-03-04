@@ -51,6 +51,15 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * 
+     */
+    public function testIsCreatesWithFloatNull()
+    {
+        $amount = Money::make( $this->usd, 0 );
+        $this->assertInstanceOf( Money::class, $amount );
+    }
+
+    /**
      * @throws StringIsNotValidIntegerException
      */
     public function testIsCreatesWithStringFactoryMethod()
