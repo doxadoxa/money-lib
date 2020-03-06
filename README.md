@@ -64,3 +64,16 @@ $amount->less( $newAmount ); // (bool) true
 $amount->more( $newAmount ); // (bool) false
 
 ```
+
+### Formatting output
+You can simply format you money with cast to string via `format` method.
+```php
+use Money\Currency;
+use Money\Money;
+
+$usd = new Currency('USD', 2);
+$money = Money::make( $usd, 1000 );
+echo $money->format();// 1,000.00 USD
+echo $money->format('', '', 0);// 1000 USD
+echo $money->format('.', ',', null, ':currency :amount');// USD 1,000.00
+```
