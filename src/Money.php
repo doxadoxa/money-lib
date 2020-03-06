@@ -166,6 +166,27 @@ class Money
     }
 
     /**
+     * @param string $decPoint
+     * @param string $thousandsSep
+     * @param int|null $decimals
+     * @param string $format
+     * @return string
+     * @throws Exceptions\DecimalsCantBeNegativeException
+     */
+    public function format( string $decPoint = '.', string $thousandsSep = ',' , ?int $decimals = null,
+                            string $format = ':amount :currency'  ): string
+    {
+        $decimals = $decimals ?? $this->getCurrency()->getDecimals();
+
+        $amount = number_format( $this->getAmount(), $decimals,
+            $decPoint, $thousandsSep );
+        $currency = $this->getCurrency()->getLabel();
+
+        return str_replace(':currency', $currency,
+            str_replace(':amount', $amount, $format ) );
+    }
+
+    /**
      * @param Money $money
      * @throws DifferentCurrenciesCantBeOperatedException
      */

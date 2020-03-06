@@ -42,7 +42,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testIsCreatesWithFloatFactoryMethod()
     {
@@ -51,7 +51,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * 
+     * @throws DecimalsCantBeNegativeException
      */
     public function testIsCreatesWithFloatNull()
     {
@@ -78,7 +78,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testIsReturnCorrectAmountsWithBaseConstructor()
     {
@@ -89,7 +89,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testIsReturnCorrectAmountsWithFloatFactoryMethod()
     {
@@ -100,7 +100,8 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
+     * @throws StringIsNotValidIntegerException
      */
     public function testIsReturnCorrectAmountsWithStringFactoryMethod()
     {
@@ -111,6 +112,7 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testAddWorksCorrect()
@@ -127,6 +129,7 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DifferentCurrenciesCantBeOperatedException
+     * @throws DecimalsCantBeNegativeException
      */
     public function testSubWorksCorrect()
     {
@@ -142,6 +145,7 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DifferentCurrenciesCantBeOperatedException
+     * @throws DecimalsCantBeNegativeException
      */
     public function testAddNotWorksOnDifferentMoneyCurrencies()
     {
@@ -153,6 +157,7 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DifferentCurrenciesCantBeOperatedException
+     * @throws DecimalsCantBeNegativeException
      */
     public function testSubNotWorksOnDifferentMoneyCurrencies()
     {
@@ -163,7 +168,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testGetCurrencyIsWorks()
     {
@@ -174,7 +179,8 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
+     * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testWorksWithSmallValues()
     {
@@ -189,8 +195,8 @@ class MoneyTest extends TestCase
         $this->assertEquals( $result, $first->add( $second )->getAmount() );
     }
 
-    /***
-     *
+    /**
+     * @throws DecimalsCantBeNegativeException
      */
     public function testEqualsWorks()
     {
@@ -202,7 +208,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testEqualsWithDifferentCurrenciesReturnsFalse()
     {
@@ -214,7 +220,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     *
+     * @throws DecimalsCantBeNegativeException
      */
     public function testEqualsWithDifferentAmountReturnsFalse()
     {
@@ -225,6 +231,7 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testLessWorks()
@@ -242,6 +249,7 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testLessThrowErrorWithDifferenceCurrencies()
@@ -256,6 +264,7 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testMoreWorks()
@@ -273,6 +282,7 @@ class MoneyTest extends TestCase
     }
 
     /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testMoreThrowErrorWithDifferenceCurrencies()
@@ -284,5 +294,27 @@ class MoneyTest extends TestCase
         $second = Money::make( $this->rub, $firstAmount );
 
         $first->more( $second );
+    }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
+     */
+    public function testFormatIsWorks()
+    {
+        $money = Money::make( $this->usd, 1000 );
+
+        $this->assertEquals( '1,000.00 USD', $money->format() );
+    }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
+     */
+    public function testFormatIsChangeable()
+    {
+        $money = Money::make( $this->usd, 1000 );
+
+        $this->assertEquals( '1000.00 USD', $money->format( '.', '' ) );
+        $this->assertEquals( '1000 USD', $money->format( '', '', 0 ) );
+        $this->assertEquals( 'USD1000', $money->format( '', '', 0, ':currency:amount' ) );
     }
 }
