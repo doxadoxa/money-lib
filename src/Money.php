@@ -180,6 +180,16 @@ class Money
     }
 
     /**
+     * @return string
+     * @throws DecimalsCantBeNegativeException
+     * @throws ObjectOfThisClassCantBeFormattedException
+     */
+    public function __toString(): string
+    {
+        return $this->format();
+    }
+
+    /**
      * @param Money $money
      * @throws DifferentCurrenciesCantBeOperatedException
      */
