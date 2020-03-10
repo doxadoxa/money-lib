@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Money;
 
 use GMP;
+use Money\Exceptions\DecimalsCantBeNegativeException;
+use Money\Exceptions\ObjectOfThisClassCantBeFormattedException;
 use Money\Exceptions\StringIsNotValidIntegerException;
 use Money\Math\ArbitraryFloat;
 use Money\Exceptions\DifferentCurrenciesCantBeOperatedException;
@@ -166,24 +168,15 @@ class Money
     }
 
     /**
-     * @param string $decPoint
-     * @param string $thousandsSep
-     * @param int|null $decimals
-     * @param string $format
      * @return string
-     * @throws Exceptions\DecimalsCantBeNegativeException
+     * @throws DecimalsCantBeNegativeException
+     * @throws ObjectOfThisClassCantBeFormattedException
      */
-    public function format( string $decPoint = '.', string $thousandsSep = ',' , ?int $decimals = null,
-                            string $format = ':amount :currency'  ): string
+    public function format(): string
     {
-        $decimals = $decimals ?? $this->getCurrency()->getDecimals();
-
-        $amount = number_format( $this->getAmount(), $decimals,
-            $decPoint, $thousandsSep );
-        $currency = $this->getCurrency()->getLabel();
-
-        return str_replace(':currency', $currency,
-            str_replace(':amount', $amount, $format ) );
+        return $this->currency->format(
+            $this->getAmount()
+        );
     }
 
     /**

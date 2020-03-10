@@ -65,15 +65,32 @@ $amount->more( $newAmount ); // (bool) false
 
 ```
 
+### ISO4217
+Library supports auto-detection for ISO4217 currencies to add some features, like symbol formatting
+(like changing USD symbol to $), default decimals count for currency and getting additional params
+like country or full name. You can access ISO4217 object via `getIso4217()` method on currency object.
+
 ### Formatting output
 You can simply format you money with cast to string via `format` method.
 ```php
 use Money\Currency;
 use Money\Money;
 
-$usd = new Currency('USD', 2);
+$usd = new Currency('USD');
 $money = Money::make( $usd, 1000 );
-echo $money->format();// 1,000.00 USD
-echo $money->format('', '', 0);// 1000 USD
-echo $money->format('.', ',', null, ':currency :amount');// USD 1,000.00
+echo $money->format();// $ 1,000.00
+```
+
+Also, you can make you own formatter by inherit with `Formatter` class and make you own format. 
+Or you can simple change format in formatters constructor:
+```php
+use Money\Formatters\CurrencyFormatter;
+use Money\Currency;
+use Money\Money;
+
+$usd = new Currency('USD');
+$formatter = new CurrencyFormatter(":amount:symbol", '.', '', 0);
+$usd->setFormatter( $formatter );
+$money = Money::make( $usd, 1000);
+echo $money->format(); // 1000$
 ```

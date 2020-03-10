@@ -303,18 +303,6 @@ class MoneyTest extends TestCase
     {
         $money = Money::make( $this->usd, 1000 );
 
-        $this->assertEquals( '1,000.00 USD', $money->format() );
-    }
-
-    /**
-     * @throws DecimalsCantBeNegativeException
-     */
-    public function testFormatIsChangeable()
-    {
-        $money = Money::make( $this->usd, 1000 );
-
-        $this->assertEquals( '1000.00 USD', $money->format( '.', '' ) );
-        $this->assertEquals( '1000 USD', $money->format( '', '', 0 ) );
-        $this->assertEquals( 'USD1000', $money->format( '', '', 0, ':currency:amount' ) );
+        $this->assertEquals( '$ 1,000.00', $money->format() );
     }
 }

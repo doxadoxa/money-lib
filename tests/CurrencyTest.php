@@ -6,6 +6,9 @@ namespace Tests;
 use Money\Currency;
 use Money\Exceptions\CurrencyLabelIsWrongException;
 use Money\Exceptions\DecimalsCantBeNegativeException;
+use Money\Exceptions\ObjectOfThisClassCantBeFormattedException;
+use Money\Formatters\CurrencyFormatter;
+use Money\Money;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -99,6 +102,30 @@ class CurrencyTest extends TestCase
     public function testGetCurrencyReturnCorrectValue(): void
     {
         $currency = new Currency('USD', 2 );
-        $this->assertEquals( 'USD', $currency->getLabel() );
+        $this->assertEquals( 'USD', $currency->getSymbol() );
+    }
+
+    /**
+     * @throws CurrencyLabelIsWrongException
+     * @throws DecimalsCantBeNegativeException
+     * @throws ObjectOfThisClassCantBeFormattedException
+     */
+    public function testFormattersIsChangeable()
+    {
+        $usd = new Currency('USD');
+
+        $usd->setFormatter( new CurrencyFormatter( ":symbol :amount", '.', '' ) );
+        $this->assertEquals( '$ 1000.00', $usd->format( 1000 ) );
+
+        $usd->setFormatter( new CurrencyFormatter(":symbol :amount", '.', '', 0) );
+        $this->assertEquals( '$ 1000', $usd->format( 1000 ) );
+
+        $usd->setFormatter( new CurrencyFormatter(":amount:symbol", '.', '', 0) );
+        $this->assertEquals( '1000$', $usd->format( 1000 ) );
+
+        $formatter = new CurrencyFormatter(":amount :symbol");
+        $formatter->setDisableIso4217Formatting( true );
+        $usd->setFormatter( $formatter );
+        $this->assertEquals( '1,000.00 USD', $usd->format( 1000 ) );
     }
 }
