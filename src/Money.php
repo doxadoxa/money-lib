@@ -206,7 +206,7 @@ class Money
      */
     private static function assertStringIsIntegerFormatted( string $value ): void
     {
-        if ( !preg_match("/^[0-9]+$/", $value) ) {
+        if ( !preg_match("/^[0-9\-]+$/", $value) ) {
             throw new StringIsNotValidIntegerException();
         }
     }
