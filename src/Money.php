@@ -51,6 +51,7 @@ class Money
         }
 
         $baseAmount = gmp_init( $init );
+
         return new self( $currency, $baseAmount );
     }
 

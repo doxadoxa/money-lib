@@ -113,6 +113,15 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DecimalsCantBeNegativeException
+     */
+    public function testMoneyCanBeNegative()
+    {
+        $first = Money::make( $this->usd, -30 );
+        $this->assertEquals( -30, $first->getAmount() );
+    }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testAddWorksCorrect()

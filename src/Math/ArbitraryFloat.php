@@ -54,9 +54,17 @@ class ArbitraryFloat
      */
     public function toFloat(): float
     {
+        $amount = $this->amount;
+        $isNegative = false;
+
+        if ( strpos($amount, '-' ) === 0 ) {
+            $amount = substr( $amount, 1 );
+            $isNegative = true;
+        }
+
         $signs = implode('', array_fill(0, $this->decimals, '0') );
-        $length = strlen( $this->amount ) > $this->decimals ? strlen( $this->amount ) : $this->decimals;
-        $amount = str_pad( $this->amount, $length, '0', STR_PAD_LEFT );
+        $length = strlen( $amount ) > $this->decimals ? strlen( $amount ) : $this->decimals;
+        $amount = str_pad( $amount, $length, '0', STR_PAD_LEFT );
         $signs = str_pad( $signs, $length, '0' );
 
         $amount = $amount | $signs;
@@ -69,7 +77,7 @@ class ArbitraryFloat
             $mantissa = '';
         }
 
-        $stringValue = $base . '.' . $mantissa;
+        $stringValue = ( !$isNegative ? '' : '-' ) . $base . '.' . $mantissa;
 
         return (float) $stringValue;
     }

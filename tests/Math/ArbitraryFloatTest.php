@@ -51,4 +51,13 @@ class ArbitraryFloatTest extends TestCase
         $number = new ArbitraryFloat('1025', 2);
         $this->assertEquals(10.25, $number->toFloat());
     }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
+     */
+    public function testNegativesToFloatConversionWorksCorrect()
+    {
+        $number = new ArbitraryFloat('-1025', 2);
+        $this->assertEquals(-10.25, $number->toFloat());
+    }
 }
