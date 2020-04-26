@@ -38,7 +38,14 @@ class ArbitraryFloat
         $base = $exploded[0];
         $mantissa = $exploded[1] ?? '';
 
-        return new self( ltrim( $base . $mantissa, '0' ), $decimals );
+        if ( $base[0] == '-' ) {
+            $negative = '-';
+            $base = substr( $base, 1 );
+        } else {
+            $negative = '';
+        }
+
+        return new self( $negative . ltrim( $base . $mantissa, '0' ), $decimals );
     }
 
     /**

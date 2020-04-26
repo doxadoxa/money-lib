@@ -122,6 +122,24 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DecimalsCantBeNegativeException
+     */
+    public function testMoneyCanBePositiveAndReal()
+    {
+        $fist = Money::make( $this->usd, 0.85 );
+        $this->assertEquals( 0.85, $fist->getAmount() );
+    }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
+     */
+    public function testMoneyCanBeNegativeAndReal()
+    {
+        $fist = Money::make( $this->usd, -0.85 );
+        $this->assertEquals( -0.85, $fist->getAmount() );
+    }
+
+    /**
+     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testAddWorksCorrect()
