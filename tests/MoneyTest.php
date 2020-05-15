@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Brick\Math\BigDecimal;
+use Brick\Math\BigInteger;
 use Money\Currency;
 use Money\Exceptions\CurrencyLabelIsWrongException;
 use Money\Exceptions\DecimalsCantBeNegativeException;
@@ -37,12 +39,11 @@ class MoneyTest extends TestCase
      */
     public function testIsCreatesWithConstructor()
     {
-        $amount = new Money( $this->usd, gmp_init( 10 ) );
+        $amount = new Money( $this->usd, BigDecimal::of( 10 ) );
         $this->assertInstanceOf( Money::class, $amount );
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testIsCreatesWithFloatFactoryMethod()
     {
@@ -51,7 +52,6 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testIsCreatesWithFloatNull()
     {
@@ -69,6 +69,24 @@ class MoneyTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function testIsCreatesWithIntFactoryMethod()
+    {
+        $amount = Money::makeFromInt( $this->usd, 10 );
+        $this->assertInstanceOf( Money::class, $amount );
+    }
+
+    /**
+     *
+     */
+    public function testIsCreatesWithBigIntegerFactoryMethod()
+    {
+        $amount = Money::makeFromBigInteger( $this->usd, BigInteger::of( 10 ) );
+        $this->assertInstanceOf( Money::class, $amount );
+    }
+
+    /**
      * @throws StringIsNotValidIntegerException
      */
     public function testIsNotCreatesWithStringFactoryMethodWithWrongParams()
@@ -78,41 +96,47 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testIsReturnCorrectAmountsWithBaseConstructor()
     {
-        $amount = new Money( $this->usd, gmp_init( 10 ) );
+        $amount = new Money( $this->usd, BigDecimal::of( 0.1 ) );
         $this->assertEquals( 0.1, $amount->getAmount() );
-        $this->assertEquals( gmp_init( 10 ), $amount->getBaseAmount() );
+        $this->assertTrue( BigDecimal::of( 0.1 )->isEqualTo( $amount->getBaseAmount() ) );
         $this->assertEquals( '10', $amount->getStringAmount() );
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testIsReturnCorrectAmountsWithFloatFactoryMethod()
     {
         $amount = Money::make( $this->usd, 0.1 );
         $this->assertEquals( 0.1, $amount->getAmount() );
-        $this->assertEquals( gmp_init( 10 ), $amount->getBaseAmount() );
+        $this->assertTrue( BigDecimal::of( 0.1 )->isEqualTo( $amount->getBaseAmount() ) );
         $this->assertEquals( '10', $amount->getStringAmount() );
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      * @throws StringIsNotValidIntegerException
      */
     public function testIsReturnCorrectAmountsWithStringFactoryMethod()
     {
         $amount = Money::makeFromString( $this->usd, '10' );
         $this->assertEquals( 0.1, $amount->getAmount() );
-        $this->assertEquals( gmp_init( 10 ), $amount->getBaseAmount() );
+        $this->assertTrue( BigDecimal::of( 0.1 )->isEqualTo( $amount->getBaseAmount() ) );
         $this->assertEquals( '10', $amount->getStringAmount() );
+        $this->assertEquals( 10, $amount->getIntAmount() );
+    }
+
+    public function testIsReturnCorrectAmountsWithIntFactoryMethod()
+    {
+        $amount = Money::makeFromInt( $this->usd, 10 );
+        $this->assertEquals( 0.1, $amount->getAmount() );
+        $this->assertTrue( BigDecimal::of(0.1)->isEqualTo( $amount->getBaseAmount() ) );
+        $this->assertEquals( '10', $amount->getStringAmount() );
+        $this->assertEquals( 10, $amount->getIntAmount() );
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testMoneyCanBeNegative()
     {
@@ -121,7 +145,6 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testMoneyCanBePositiveAndReal()
     {
@@ -130,7 +153,6 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      */
     public function testMoneyCanBeNegativeAndReal()
     {
@@ -139,7 +161,6 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testAddWorksCorrect()
@@ -156,7 +177,6 @@ class MoneyTest extends TestCase
 
     /**
      * @throws DifferentCurrenciesCantBeOperatedException
-     * @throws DecimalsCantBeNegativeException
      */
     public function testSubWorksCorrect()
     {

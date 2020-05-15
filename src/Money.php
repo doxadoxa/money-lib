@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace Money;
 
-use GMP;
-use Money\Exceptions\DecimalsCantBeNegativeException;
+use Brick\Math\BigDecimal;
+use Brick\Math\BigInteger;
+use Brick\Math\BigNumber;
+use Brick\Math\RoundingMode;
 use Money\Exceptions\ObjectOfThisClassCantBeFormattedException;
 use Money\Exceptions\StringIsNotValidIntegerException;
-use Money\Math\ArbitraryFloat;
 use Money\Exceptions\DifferentCurrenciesCantBeOperatedException;
 
 /**
@@ -16,18 +17,23 @@ use Money\Exceptions\DifferentCurrenciesCantBeOperatedException;
  */
 class Money
 {
+    /** @var BigDecimal|BigNumber|null */
     private $amount;
+    /** @var Currency */
     private $currency;
 
     /**
      * Money constructor.
      * @param Currency $currency
-     * @param GMP|null $amount
+     * @param BigDecimal|null $amount
      */
-    public function __construct( Currency $currency, ?GMP $amount = null )
+    public function __construct( Currency $currency, ?BigDecimal $amount = null )
     {
         if ( $amount === null ) {
-            $amount = gmp_init(0);
+            $amount = BigDecimal::of(0)
+                ->toScale( $currency->getDecimals() );
+        } else {
+            $amount = $amount->toScale( $currency->getDecimals() );
         }
 
         $this->amount = $amount;
@@ -38,19 +44,16 @@ class Money
      * @param Currency $currency
      * @param float $amount
      * @return static
-     * @throws Exceptions\DecimalsCantBeNegativeException
      */
     public static function make( Currency $currency, float $amount = 0 ): self
     {
-        $bigIntString = ArbitraryFloat::makeFromFloat( $amount, $currency->getDecimals() );
+        $baseAmount = BigDecimal::of( $amount )
+            ->toScale( $currency->getDecimals() );
 
         if ( $amount == 0 ) {
-            $init = 0;
-        } else {
-            $init = $bigIntString->toString();
+            $baseAmount = BigDecimal::of( 0 )
+                ->toScale( $currency->getDecimals() );
         }
-
-        $baseAmount = gmp_init( $init );
 
         return new self( $currency, $baseAmount );
     }
@@ -62,7 +65,17 @@ class Money
      */
     public static function makeFromInt( Currency $currency, int $amount = 0 ): self
     {
-        return new self( $currency, gmp_init( $amount ) );
+        return new self( $currency, BigDecimal::ofUnscaledValue( $amount, $currency->getDecimals() ) );
+    }
+
+    /**
+     * @param Currency $currency
+     * @param BigInteger $amount
+     * @return static
+     */
+    public static function makeFromBigInteger( Currency $currency, ?BigInteger $amount = null ): self
+    {
+        return new self( $currency, BigDecimal::ofUnscaledValue( $amount ?? BigInteger::of(0), $currency->getDecimals() ) );
     }
 
     /**
@@ -74,22 +87,22 @@ class Money
     public static function makeFromString( Currency $currency, string $amount = '0' ): self
     {
         self::assertStringIsIntegerFormatted( $amount );
-        return new self( $currency, gmp_init( $amount ) );
+        return new self( $currency, BigDecimal::ofUnscaledValue( $amount, $currency->getDecimals() ) );
     }
 
     /**
      * @return float
-     * @throws Exceptions\DecimalsCantBeNegativeException
      */
     public function getAmount(): float
     {
-        return ( new ArbitraryFloat( gmp_strval( $this->amount ), $this->currency->getDecimals()  ) )->toFloat();
+        return $this->getBaseAmount()
+            ->toFloat();
     }
 
     /**
-     * @return GMP
+     * @return BigDecimal
      */
-    public function getBaseAmount(): GMP
+    public function getBaseAmount(): BigDecimal
     {
         return $this->amount;
     }
@@ -99,7 +112,16 @@ class Money
      */
     public function getStringAmount(): string
     {
-        return gmp_strval( $this->amount );
+        return (string) $this->getBaseAmount()
+            ->getUnscaledValue();
+    }
+
+    /**
+     * @return int
+     */
+    public function getIntAmount(): int
+    {
+        return $this->getBaseAmount()->getUnscaledValue()->toInt();
     }
 
     /**
@@ -118,8 +140,7 @@ class Money
     public function add( Money $money ): self
     {
         $this->assertOperationsIsAvailable( $money );
-        $amount = gmp_add( $this->getBaseAmount(), $money->getBaseAmount() );
-
+        $amount = $this->getBaseAmount()->plus( $money->getBaseAmount() );
         return new self( $this->currency, $amount );
     }
 
@@ -131,8 +152,7 @@ class Money
     public function sub( Money $money ): self
     {
         $this->assertOperationsIsAvailable( $money );
-        $amount = gmp_sub( $this->getBaseAmount(), $money->getBaseAmount() );
-
+        $amount = $this->getBaseAmount()->minus( $money->getBaseAmount() );
         return new self( $this->currency, $amount );
     }
 
@@ -143,7 +163,7 @@ class Money
     public function equals( Money $money ): bool
     {
         return $this->getCurrency()->equals( $money->getCurrency() ) &&
-            gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) == 0;
+            $this->getBaseAmount()->isEqualTo( $money->getBaseAmount() );
     }
 
     /**
@@ -154,7 +174,7 @@ class Money
     public function less( Money $money ): bool
     {
         $this->assertOperationsIsAvailable( $money );
-        return gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) === -1;
+        return $this->getBaseAmount()->isLessThan( $money->getBaseAmount() );
     }
 
     /**
@@ -165,12 +185,11 @@ class Money
     public function more( Money $money ): bool
     {
         $this->assertOperationsIsAvailable( $money );
-        return gmp_cmp( $this->getBaseAmount(), $money->getBaseAmount() ) === 1;
+        return $this->getBaseAmount()->isGreaterThan( $money->getBaseAmount() );
     }
 
     /**
      * @return string
-     * @throws DecimalsCantBeNegativeException
      * @throws ObjectOfThisClassCantBeFormattedException
      */
     public function format(): string
@@ -182,7 +201,6 @@ class Money
 
     /**
      * @return string
-     * @throws DecimalsCantBeNegativeException
      * @throws ObjectOfThisClassCantBeFormattedException
      */
     public function __toString(): string
