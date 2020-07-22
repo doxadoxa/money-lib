@@ -57,7 +57,14 @@ echo $newAmount->getAmount(); // (float) 0.045
 // Comparisons
 $amount = Money::make( $usd, 10 );
 $newAmount = Money::make( $usd, 10);
+$nullAmount = Money::make( $ethereum, 0);
+$newNullAmount = Money::make( $usd, 0);
+
 $amount->equals( $newAmount ); // (bool) true
+$nullAmount->equals($newNullAmount); // (bool) true
+
+$amount->strictEquals( $newAmount ); // (bool) true
+$nullAmount->strictEquals($newNullAmount); // (bool) false
 
 $newAmount = Money::make( $usd, 20 );
 $amount->less( $newAmount ); // (bool) true
