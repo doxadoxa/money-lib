@@ -151,9 +151,11 @@ class Currency implements FormattingCurrency
 
     /**
      * @return Currency
+     * @throws CurrencyLabelIsWrongException
+     * @throws DecimalsCantBeNegativeException
      */
     public static function any(): Currency
     {
-        return new Currency(self::ANY_SYMBOL);
+        return new Currency(self::ANY_SYMBOL, 0);
     }
 }
