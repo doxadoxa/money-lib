@@ -255,7 +255,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
+     *
      */
     public function testEqualsWithDifferentCurrenciesReturnsFalse()
     {
@@ -267,7 +267,7 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
+     *
      */
     public function testEqualsWithDifferentAmountReturnsFalse()
     {
@@ -278,7 +278,18 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @throws DecimalsCantBeNegativeException
+     *
+     */
+    public function testEqualsWithNullAmountReturnTrueOnDifferentCurrencies()
+    {
+        $first = Money::make($this->usd, 0);
+        $second = Money::make($this->rub, 0);
+
+        $this->assertTrue($first->equals($second));
+        $this->assertFalse($first->equals($second, true));
+    }
+
+    /**
      * @throws DifferentCurrenciesCantBeOperatedException
      */
     public function testLessWorks()

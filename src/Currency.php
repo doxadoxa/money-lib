@@ -17,12 +17,15 @@ use Money\Iso4217\Iso4217Factory;
  */
 class Currency implements FormattingCurrency
 {
+    public const ANY_SYMBOL = 'ANY';
+
     /** @var string  */
     private $symbol;
     /** @var int */
     private $decimals;
     /** @var Iso4217Currency|null */
     private $iso4217;
+    /** @var CurrencyFormatter|Formatter */
     private $formatter;
 
     /**
@@ -135,11 +138,22 @@ class Currency implements FormattingCurrency
         return $this->formatter;
     }
 
+    /**
+     * @param Formatter $formatter
+     */
     public function setFormatter( Formatter $formatter ): void
     {
         $this->getIco4217()->setFormatter( new Iso4217Formatter(
             $formatter->getFormat(), $formatter->getDecPoint(),
             $formatter->getThousandsSep(), $formatter->getDecimals() ) );
         $this->formatter = $formatter;
+    }
+
+    /**
+     * @return Currency
+     */
+    public static function any(): Currency
+    {
+        return new Currency(self::ANY_SYMBOL);
     }
 }

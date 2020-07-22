@@ -128,4 +128,13 @@ class CurrencyTest extends TestCase
         $usd->setFormatter( $formatter );
         $this->assertEquals( '1,000.00 USD', $usd->format( 1000 ) );
     }
+
+    /**
+     *
+     */
+    public function testAny()
+    {
+        $any = Currency::any();
+        $this->assertEquals(Currency::ANY_SYMBOL, $any->getSymbol());
+    }
 }

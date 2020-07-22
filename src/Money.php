@@ -158,12 +158,21 @@ class Money
 
     /**
      * @param Money $money
+     * @param bool $nullStrict
      * @return bool
      */
-    public function equals( Money $money ): bool
+    public function equals(Money $money, bool $nullStrict = false): bool
     {
-        return $this->getCurrency()->equals( $money->getCurrency() ) &&
-            $this->getBaseAmount()->isEqualTo( $money->getBaseAmount() );
+        if (
+            $nullStrict === false &&
+            $this->getBaseAmount()->isEqualTo($money->getBaseAmount()) &&
+            $this->getBaseAmount()->isEqualTo(BigDecimal::of(0))
+        ) {
+            return true;
+        }
+
+        return $this->getCurrency()->equals($money->getCurrency() ) &&
+            $this->getBaseAmount()->isEqualTo($money->getBaseAmount());
     }
 
     /**
