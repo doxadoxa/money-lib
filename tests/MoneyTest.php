@@ -286,7 +286,7 @@ class MoneyTest extends TestCase
         $second = Money::make($this->rub, 0);
 
         $this->assertTrue($first->equals($second));
-        $this->assertFalse($first->equals($second, true));
+        $this->assertFalse($first->strictEquals($second));
     }
 
     /**
