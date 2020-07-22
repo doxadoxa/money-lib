@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Money\Iso4217;
 
-use Money\Exceptions\ObjectOfThisClassCantBeFormattedException;
 use Money\Formatters\Formatter;
 use Money\Formatters\Iso4217Formatter;
 

@@ -2952,5 +2952,15 @@ return [
             'Dollar',
             'Dollars'
         ]
+    ],
+    'ANY'=> [
+        'alpha3'=> 'ANY',
+        'code_num'=> 100000,
+        'countries'=> [],
+        'minor'=> 0,
+        'name'=> 'Meta currency ANY>',
+        'symbols'=> [
+            'any'
+        ]
     ]
 ];
